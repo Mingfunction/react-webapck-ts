@@ -13,36 +13,72 @@ module.exports = merge(common, {
 		rules: [
 			{
 				test: /\.css$/,
+				exclude: /\.module\.css$/,
 				use: [
 					// link文件引入
-					{
-						loader: MiniCssExtractPlugin.loader,
-						// 修改scss打包后引入图片的路径
-						options: {
-							publicPath: '../'
-						}
-					},
+					MiniCssExtractPlugin.loader,
 					"css-loader",
 					"postcss-loader"
 				]
 			},
 			{
-				test: /\.less$/,
+				test: /\.module\.css$/,
 				use: [
+					// link的方式引入
+					MiniCssExtractPlugin.loader,
 					{
-						loader: MiniCssExtractPlugin.loader,
-						// 修改scss打包后引入图片的路径
+						loader: "css-loader",
 						options: {
-							publicPath: '../'
+							modules: { localIdentName: "[local]_[name]_[hash:base64:5]" },
+							importLoaders: 1,
 						}
 					},
+					// 增加浏览器的前缀 有postcss.congfig.js文件
+					"postcss-loader"
+				],
+				// node_modules 除外
+				exclude: [
+					path.resolve(__dirname, "../node_modules"),
+				]
+			},
+			{
+				test: /\.less$/,
+				use: [
+					MiniCssExtractPlugin.loader,
 					"css-loader",
 					"postcss-loader",
 					"less-loader"
 				]
 			},
 			{
+				test: /\.module\.(scss|sass)$/,
+				use: [
+					{
+						loader: MiniCssExtractPlugin.loader,
+						options: {
+							publicPath: "../"
+						}
+					},
+					{
+						loader: "css-loader",
+						options: {
+							// 如果要使用import scss的用法 ，
+							// 可以在css-loader上添加 options属性 importLoaders 
+							// 让import进来的css也能使用到postcss loader 和sass loader
+							importLoaders: 2,
+							modules: { localIdentName: "[local]_[name]_[hash:base64:5]" },
+						}
+					},
+					"postcss-loader",
+					"sass-loader"
+				],
+				exclude: [
+					path.resolve(__dirname, "../node_modules")
+				]
+			},
+			{
 				test: /\.(sass|scss)/,
+				exclude: /\.module\.(scss|sass)$/,
 				use: [
 					{
 						loader: MiniCssExtractPlugin.loader,

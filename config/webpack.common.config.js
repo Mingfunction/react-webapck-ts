@@ -1,3 +1,9 @@
+/*
+ * @Date: 2020-04-05 11:21:30
+ * @LastEditors: Min
+ * @LastEditTime: 2020-04-06 23:11:11
+ * @fun:
+ */
 const path = require("path");
 var TARGET = process.env.npm_lifecycle_event;
 const isDev = process.env.NODE_ENV;
@@ -6,18 +12,16 @@ console.log(path.resolve(__dirname, "../src"));
 module.exports = {
   devtool: "cheap-module-eval-source-map",
   resolve: {
-    extensions: [".js", ".jsx", ".ts", ".tsx", ".json", ".less", ".scss"],
+    // 在引入这些文件时,可以不添加后缀
+    extensions: [".ts", ".tsx", ".scss", ".css", ".js", ".jsx", ".less"],
     modules: [path.resolve(__dirname, "../src"), "node_modules"],
     alias: {
       // 方便 import from
-      // 但是也不方便因为编辑器有路径功能
-      images: path.join(__dirname, "../src/assets/images"),
-      _pages: path.join(__dirname, "../src/assets/pages"),
-      _font: path.join(__dirname, "../src/assets/font"),
-      _components: path.join(__dirname, "../src/components"),
-      util: path.join(__dirname, "../src/util"),
-      _mock: path.join(__dirname, "../src/mock"),
-      "@store": path.join(__dirname, "../src/store"),
+      "@components": path.join(__dirname, "../src/components"),
+      "@util": path.join(__dirname, "../src/util"),
+      "@pages": path.join(__dirname, "../src/pages"),
+      _images: path.join(__dirname, "../src/assets/img"),
+      _iconfont: path.join(__dirname, "../src/assets/iconfont"),
     },
   },
   entry: {
@@ -27,19 +31,11 @@ module.exports = {
   output: {
     filename: "js/[name].bundle.[chunkhash:4].js",
     // dist 必须为绝对路径
+    chunkFilename: "[name].chunk.js",
     path: path.resolve(__dirname, "../dist"),
   },
   module: {
     rules: [
-      // {
-      //     test: /\.js$/,
-      //     loader: 'eslint-loader',
-      //     enforce: "pre",
-      //     include: [path.resolve(__dirname, 'src')], // 指定检查的目录
-      //     options: { // 这里的配置项参数将会被传递到 eslint 的 CLIEngine
-      //         formatter: require('eslint-friendly-formatter') // 指定错误报告的格式规范
-      //     }
-      // },
       {
         test: /\.(js|jsx)$/,
         use: "babel-loader",
@@ -57,7 +53,7 @@ module.exports = {
         use: {
           loader: "file-loader",
           options: {
-            name: "[name]_[hash].[ext]",
+            name: "[name]-[hash].[ext]",
             outputPath: "font/",
           },
         },
